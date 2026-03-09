@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.local
+*.log
+*.tsbuildinfo
+.DS_Store
+
+# Keep dist/ — pre-built for Plesk deployment
+# dist/

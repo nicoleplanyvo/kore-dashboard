@@ -1,0 +1,140 @@
+{
+  "app": {
+    "title": "KORE Dashboard"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "tenants": "Kunden",
+    "users": "Benutzer",
+    "tools": "Tools",
+    "stores": "Stores",
+    "gdpr": "DSGVO",
+    "audit": "Store Audit",
+    "logout": "Abmelden"
+  },
+  "login": {
+    "title": "Dashboard Login",
+    "subtitle": "Anmelden um fortzufahren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "error": "Ungültige Anmeldedaten."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalTenants": "Kunden gesamt",
+    "activeTenants": "Aktive Kunden",
+    "totalStores": "Stores gesamt",
+    "activeStores": "Aktive Stores",
+    "totalToolBookings": "Tool-Buchungen",
+    "mrr": "MRR",
+    "recentTenants": "Zuletzt hinzugefügt"
+  },
+  "tenants": {
+    "title": "Kunden",
+    "new": "Neuer Kunde",
+    "search": "Suche nach Name, Slug oder E-Mail...",
+    "empty": "Noch keine Kunden vorhanden.",
+    "name": "Name",
+    "slug": "Slug",
+    "status": "Status",
+    "stores": "Stores",
+    "users": "Benutzer",
+    "contact": "Kontakt",
+    "created": "Erstellt",
+    "actions": "Aktionen",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Deaktivieren",
+    "deleteConfirm": "Möchten Sie diesen Kunden wirklich deaktivieren?",
+    "createTitle": "Neuen Kunden anlegen",
+    "editTitle": "Kunde bearbeiten",
+    "contactEmail": "Kontakt E-Mail",
+    "contactName": "Kontaktperson",
+    "contactPhone": "Telefon",
+    "maxUsers": "Max. Benutzer"
+  },
+  "tools": {
+    "title": "Tools",
+    "totalTools": "Tools gesamt",
+    "totalAssignments": "Aktive Buchungen",
+    "mrr": "MRR",
+    "assign": "Buchen",
+    "unassign": "Entfernen",
+    "pricePerMonth": "pro Store / Monat"
+  },
+  "stores": {
+    "title": "Stores",
+    "new": "Neuer Store",
+    "empty": "Noch keine Stores vorhanden.",
+    "name": "Name",
+    "city": "Stadt",
+    "address": "Adresse",
+    "tenant": "Kunde",
+    "tools": "Tools",
+    "created": "Erstellt",
+    "detail": "Store-Detail",
+    "assignedTools": "Gebuchte Tools",
+    "availableTools": "Verfügbare Tools"
+  },
+  "status": {
+    "ACTIVE": "Aktiv",
+    "PAST_DUE": "Überfällig",
+    "CANCELED": "Gekündigt",
+    "TRIALING": "Testphase"
+  },
+  "users": {
+    "title": "Benutzer",
+    "create": "Benutzer anlegen",
+    "edit": "Benutzer bearbeiten",
+    "name": "Name",
+    "email": "E-Mail",
+    "role": "Rolle",
+    "stores": "Stores",
+    "status": "Status",
+    "lastLogin": "Letzter Login",
+    "empty": "Keine Benutzer gefunden.",
+    "deleteConfirm": "Benutzer wirklich deaktivieren?"
+  },
+  "roles": {
+    "kore_admin": "Super Admin",
+    "tenant_admin": "Kunden-Admin",
+    "regional_manager": "Regional Manager",
+    "multisite_manager": "Multisite Manager",
+    "store_manager": "Store Manager",
+    "learner": "Mitarbeiter"
+  },
+  "impersonation": {
+    "banner": "Angemeldet als",
+    "back": "Zurück zum Admin",
+    "button": "Als Benutzer anmelden"
+  },
+  "audit": {
+    "title": "Store Excellence Audit",
+    "overview": "Übersicht",
+    "sessions": "Audit-Historie",
+    "newSession": "Neues Audit",
+    "templates": "Templates",
+    "avgScore": "Durchschnitt",
+    "passRate": "Pass-Rate",
+    "totalAudits": "Durchgeführte Audits",
+    "trend": {
+      "up": "Aufwärtstrend",
+      "down": "Abwärtstrend",
+      "stable": "Stabil"
+    },
+    "status": {
+      "DRAFT": "Entwurf",
+      "IN_PROGRESS": "In Arbeit",
+      "COMPLETED": "Abgeschlossen",
+      "CANCELLED": "Abgebrochen"
+    }
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Ein Fehler ist aufgetreten.",
+    "back": "Zurück",
+    "allStatuses": "Alle Status"
+  }
+}

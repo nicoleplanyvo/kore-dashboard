@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --kore-bg: #F7F4EF;
+  --kore-surface: #EDEAE4;
+  --kore-border: #D8D4CC;
+  --kore-ink: #1C1A17;
+  --kore-mid: #8A847A;
+  --kore-faint: #B5B0A8;
+  --kore-white: #FDFCFA;
+  --kore-brass: #9E8460;
+  --kore-brass-lt: #C9B898;
+  --kore-brass-dk: #7A6347;
+  --kore-success: #6B8C6B;
+  --kore-warning: #B8935A;
+  --kore-error: #9E5252;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  color: var(--kore-ink);
+  background-color: var(--kore-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Cormorant', serif;
+}
