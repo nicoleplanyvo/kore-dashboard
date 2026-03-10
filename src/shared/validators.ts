@@ -75,6 +75,21 @@ export const tenantCreateSchema = z.object({
 
 export const tenantUpdateSchema = tenantCreateSchema.partial();
 
+// === Region Management ===
+
+export const regionCreateSchema = z.object({
+  tenantId: z.string().min(1),
+  name: z.string().min(2, 'Name muss mindestens 2 Zeichen haben').max(100),
+  description: z.string().max(500).optional().or(z.literal('')),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+export const regionUpdateSchema = regionCreateSchema.omit({ tenantId: true }).partial();
+
+export const regionStoreAssignSchema = z.object({
+  storeIds: z.array(z.string().min(1)),
+});
+
 // === Store Management ===
 
 export const storeCreateSchema = z.object({
@@ -82,6 +97,7 @@ export const storeCreateSchema = z.object({
   name: z.string().min(2, 'Name muss mindestens 2 Zeichen haben').max(100),
   city: z.string().max(100).optional().or(z.literal('')),
   address: z.string().max(200).optional().or(z.literal('')),
+  regionId: z.string().min(1).optional().or(z.literal('')),
 });
 
 export const storeUpdateSchema = storeCreateSchema.omit({ tenantId: true }).partial();
@@ -180,6 +196,9 @@ export type CourseCreateInput = z.infer<typeof courseCreateSchema>;
 export type KPIEntryInput = z.infer<typeof kpiEntrySchema>;
 export type TenantCreateInput = z.infer<typeof tenantCreateSchema>;
 export type TenantUpdateInput = z.infer<typeof tenantUpdateSchema>;
+export type RegionCreateInput = z.infer<typeof regionCreateSchema>;
+export type RegionUpdateInput = z.infer<typeof regionUpdateSchema>;
+export type RegionStoreAssignInput = z.infer<typeof regionStoreAssignSchema>;
 export type StoreCreateInput = z.infer<typeof storeCreateSchema>;
 export type StoreUpdateInput = z.infer<typeof storeUpdateSchema>;
 export type StoreToolAssignInput = z.infer<typeof storeToolAssignSchema>;
@@ -191,106 +210,3 @@ export type AuditTemplateCreateInput = z.infer<typeof auditTemplateCreateSchema>
 export type AuditTemplateUpdateInput = z.infer<typeof auditTemplateUpdateSchema>;
 export type AuditSessionCreateInput = z.infer<typeof auditSessionCreateSchema>;
 export type AuditResponseInput = z.infer<typeof auditResponseSchema>;
-
-// === Audit Scoring ===
-
-export interface ScoredCategory {
-  categoryId: string;
-  categoryName: string;
-  weight: number;
-  criteriaCount: number;
-  scoredCount: number;
-  averagePercent: number;
-  passCount: number;
-  failCount: number;
-  passRate: number;
-}
-
-export interface AuditScoreResult {
-  overallScore: number;
-  overallPassRate: number;
-  categories: ScoredCategory[];
-}
-
-interface CategoryInput {
-  id: string;
-  name: string;
-  weight: number;
-  criteria: Array<{
-    id: string;
-    isRequired: boolean;
-  }>;
-}
-
-interface ResponseInput {
-  criterionId: string;
-  scorePercent: number | null;
-  passed: boolean | null;
-}
-
-/**
- * Berechnet den gewichteten Gesamtscore eines Audits.
- * Jede Kategorie hat ein Gewicht (weight), der Gesamtscore ist der gewichtete Durchschnitt.
- */
-export function calculateAuditScore(
-  categories: CategoryInput[],
-  responses: ResponseInput[],
-): AuditScoreResult {
-  const responseMap = new Map(responses.map((r) => [r.criterionId, r]));
-
-  let totalWeight = 0;
-  let weightedScoreSum = 0;
-  let totalPassed = 0;
-  let totalEvaluated = 0;
-
-  const scoredCategories: ScoredCategory[] = categories.map((cat) => {
-    let catScoreSum = 0;
-    let catScored = 0;
-    let catPassed = 0;
-    let catFailed = 0;
-
-    for (const crit of cat.criteria) {
-      const resp = responseMap.get(crit.id);
-      if (resp) {
-        if (resp.scorePercent !== null && resp.scorePercent !== undefined) {
-          catScoreSum += resp.scorePercent;
-          catScored++;
-        }
-        if (resp.passed === true) {
-          catPassed++;
-          totalPassed++;
-          totalEvaluated++;
-        } else if (resp.passed === false) {
-          catFailed++;
-          totalEvaluated++;
-        }
-      }
-    }
-
-    const avgPercent = catScored > 0 ? catScoreSum / catScored : 0;
-    const passRate =
-      catPassed + catFailed > 0 ? (catPassed / (catPassed + catFailed)) * 100 : 0;
-
-    totalWeight += cat.weight;
-    weightedScoreSum += avgPercent * cat.weight;
-
-    return {
-      categoryId: cat.id,
-      categoryName: cat.name,
-      weight: cat.weight,
-      criteriaCount: cat.criteria.length,
-      scoredCount: catScored,
-      averagePercent: Math.round(avgPercent * 10) / 10,
-      passCount: catPassed,
-      failCount: catFailed,
-      passRate: Math.round(passRate * 10) / 10,
-    };
-  });
-
-  const overallScore =
-    totalWeight > 0 ? Math.round((weightedScoreSum / totalWeight) * 10) / 10 : 0;
-  const overallPassRate =
-    totalEvaluated > 0 ? Math.round((totalPassed / totalEvaluated) * 1000) / 10 : 0;
-
-  return { overallScore, overallPassRate, categories: scoredCategories };
-}

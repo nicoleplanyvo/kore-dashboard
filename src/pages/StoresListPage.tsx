@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Store, MapPin, Plus } from 'lucide-react';
+import { Store, MapPin, Plus, GitBranch, Filter } from 'lucide-react';
 import { Badge, Button, Input } from '../components/ui';
 import { useStores } from '../hooks/useStores';
+import { useRegions } from '../hooks/useRegions';
 import { useAuthStore } from '../stores/authStore';
 import { hasMinRole, type UserRole } from '../shared/types';
 import { api } from '../lib/api';
@@ -11,6 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 export function StoresListPage() {
   const user = useAuthStore((s) => s.user);
   const { data: stores, isLoading } = useStores(user?.tenantId || undefined);
+  const { data: regions } = useRegions(user?.tenantId || undefined);
   const queryClient = useQueryClient();
 
   // Store-Erstellungsformular State
@@ -18,17 +20,37 @@ export function StoresListPage() {
   const [newStoreName, setNewStoreName] = useState('');
   const [newStoreCity, setNewStoreCity] = useState('');
   const [newStoreAddress, setNewStoreAddress] = useState('');
+  const [newStoreRegionId, setNewStoreRegionId] = useState('');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
+
+  // Region-Filter
+  const [regionFilter, setRegionFilter] = useState<string>('all');
 
   // multisite_manager+ kann Stores erstellen
   const canCreateStore = hasMinRole((user?.role || 'learner') as UserRole, 'multisite_manager');
 
   // Filtere Stores nach User-Zuweisungen (für Manager/Learner)
-  const visibleStores = stores?.filter((store) => {
-    if (user?.role === 'kore_admin' || user?.role === 'tenant_admin') return true;
-    return user?.storeAssignments?.includes(store.id);
-  });
+  const visibleStores = useMemo(() => {
+    let filtered = stores?.filter((store) => {
+      if (user?.role === 'kore_admin' || user?.role === 'tenant_admin') return true;
+      return user?.storeAssignments?.includes(store.id);
+    });
+
+    // Region-Filter anwenden
+    if (regionFilter !== 'all' && filtered) {
+      if (regionFilter === 'none') {
+        filtered = filtered.filter((s) => !s.regionId);
+      } else {
+        filtered = filtered.filter((s) => s.regionId === regionFilter);
+      }
+    }
+
+    return filtered;
+  }, [stores, user, regionFilter]);
+
+  // Prüfen ob Regionen existieren
+  const hasRegions = regions && regions.length > 0;
 
   const handleCreateStore = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,12 +64,14 @@ export function StoresListPage() {
           name: newStoreName.trim(),
           city: newStoreCity.trim() || undefined,
           address: newStoreAddress.trim() || undefined,
+          regionId: newStoreRegionId || undefined,
           tenantId: user?.tenantId,
         }),
       });
       setNewStoreName('');
       setNewStoreCity('');
       setNewStoreAddress('');
+      setNewStoreRegionId('');
       setShowCreateForm(false);
       queryClient.invalidateQueries({ queryKey: ['stores'] });
     } catch (err) {
@@ -74,6 +98,51 @@ export function StoresListPage() {
         )}
       </div>
 
+      {/* Region-Filter */}
+      {hasRegions && (
+        <div className="flex items-center gap-md mb-lg flex-wrap">
+          <div className="flex items-center gap-xs text-kore-mid">
+            <Filter size={14} />
+            <span className="font-body text-small">Region:</span>
+          </div>
+          <div className="flex flex-wrap gap-xs">
+            <button
+              onClick={() => setRegionFilter('all')}
+              className={`px-md py-xs font-body text-small border transition-colors ${
+                regionFilter === 'all'
+                  ? 'border-kore-brass bg-kore-brass/10 text-kore-ink'
+                  : 'border-kore-border text-kore-mid hover:border-kore-brass'
+              }`}
+            >
+              Alle
+            </button>
+            {regions.map((r) => (
+              <button
+                key={r.id}
+                onClick={() => setRegionFilter(r.id)}
+                className={`px-md py-xs font-body text-small border transition-colors ${
+                  regionFilter === r.id
+                    ? 'border-kore-brass bg-kore-brass/10 text-kore-ink'
+                    : 'border-kore-border text-kore-mid hover:border-kore-brass'
+                }`}
+              >
+                {r.name}
+              </button>
+            ))}
+            <button
+              onClick={() => setRegionFilter('none')}
+              className={`px-md py-xs font-body text-small border transition-colors ${
+                regionFilter === 'none'
+                  ? 'border-kore-brass bg-kore-brass/10 text-kore-ink'
+                  : 'border-kore-border text-kore-mid hover:border-kore-brass'
+              }`}
+            >
+              Ohne Region
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Store-Erstellungsformular */}
       {showCreateForm && (
         <div className="bg-kore-white border border-kore-border p-lg mb-lg max-w-lg">
@@ -95,6 +164,22 @@ export function StoresListPage() {
               value={newStoreAddress}
               onChange={(e) => setNewStoreAddress(e.target.value)}
             />
+            {/* Region-Dropdown */}
+            {hasRegions && (
+              <div>
+                <label className="block font-body text-small text-kore-mid mb-xs">Region</label>
+                <select
+                  value={newStoreRegionId}
+                  onChange={(e) => setNewStoreRegionId(e.target.value)}
+                  className="w-full px-md py-sm border border-kore-border bg-kore-white font-body text-body text-kore-ink focus:outline-none focus:border-kore-brass transition-colors"
+                >
+                  <option value="">Keine Region</option>
+                  {regions.map((r) => (
+                    <option key={r.id} value={r.id}>{r.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             {createError && (
               <p className="font-body text-small text-kore-error">{createError}</p>
             )}
@@ -133,15 +218,26 @@ export function StoresListPage() {
                 </Badge>
               </div>
               {store.city && (
-                <div className="flex items-center gap-xs text-kore-mid">
+                <div className="flex items-center gap-xs text-kore-mid mb-xs">
                   <MapPin size={14} />
                   <span className="font-body text-small">{store.city}</span>
                 </div>
               )}
+              {store.region && (
+                <div className="flex items-center gap-xs text-kore-mid">
+                  <GitBranch size={14} />
+                  <span className="font-body text-small">{store.region.name}</span>
+                </div>
+              )}
               <div className="mt-md pt-md border-t border-kore-border flex items-center justify-between">
-                <span className="font-body text-caption text-kore-mid uppercase tracking-[0.14em]">
-                  {store._count.tools} Tools
-                </span>
+                <div className="flex items-center gap-md">
+                  <span className="font-body text-caption text-kore-mid uppercase tracking-[0.14em]">
+                    {store._count.tools} Tools
+                  </span>
+                  <span className="font-body text-caption text-kore-mid uppercase tracking-[0.14em]">
+                    {store._count.userAssignments} User
+                  </span>
+                </div>
                 <span className="font-body text-small text-kore-mid">
                   {store.tenant.name}
                 </span>
@@ -151,7 +247,7 @@ export function StoresListPage() {
         </div>
       ) : (
         <div className="bg-kore-white border border-kore-border p-xl text-kore-mid font-body text-small">
-          Keine Stores verfügbar.
+          {regionFilter !== 'all' ? 'Keine Stores in dieser Region.' : 'Keine Stores verfügbar.'}
         </div>
       )}
     </div>

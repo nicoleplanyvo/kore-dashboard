@@ -11,6 +11,8 @@ interface StoreTenant {
 interface StoreListItem {
   id: string;
   tenantId: string;
+  regionId: string | null;
+  region: { id: string; name: string } | null;
   name: string;
   city: string | null;
   address: string | null;
@@ -18,7 +20,7 @@ interface StoreListItem {
   createdAt: string;
   updatedAt: string;
   tenant: StoreTenant;
-  _count: { tools: number };
+  _count: { tools: number; userAssignments: number };
 }
 
 interface ToolDef {
@@ -45,6 +47,8 @@ interface StoreToolAssignment {
 interface StoreDetail {
   id: string;
   tenantId: string;
+  regionId: string | null;
+  region: { id: string; name: string; description: string | null } | null;
   name: string;
   city: string | null;
   address: string | null;

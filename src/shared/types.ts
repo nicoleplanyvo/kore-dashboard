@@ -124,11 +124,28 @@ export interface ToolDefinition {
   sortOrder: number;
 }
 
+// === Region ===
+
+export interface Region {
+  id: string;
+  tenantId: string;
+  name: string;
+  description: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  stores?: Store[];
+  _count?: { stores: number };
+}
+
 // === Store ===
 
 export interface Store {
   id: string;
   tenantId: string;
+  regionId: string | null;
+  region?: { id: string; name: string } | null;
   name: string;
   city: string | null;
   address: string | null;
@@ -136,7 +153,7 @@ export interface Store {
   createdAt: string;
   updatedAt: string;
   tools?: StoreToolAssignment[];
-  _count?: { tools: number };
+  _count?: { tools: number; userAssignments?: number };
 }
 
 export interface StoreToolAssignment {
@@ -258,9 +275,18 @@ export interface ReportingStore {
   }[];
 }
 
+export interface ReportingRegion {
+  id: string;
+  name: string;
+  description: string | null;
+  sortOrder: number;
+  stores: ReportingStore[];
+}
+
 export interface ReportingHierarchy {
   tenant: { id: string; name: string };
-  stores: ReportingStore[];
+  regions: ReportingRegion[];
+  stores: ReportingStore[]; // Nicht zugeordnete Stores (regionId: null)
   managers: ReportingManager[];
 }
 

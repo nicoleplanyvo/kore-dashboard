@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Check, X, Camera } from 'lucide-react';
 import { useAuditSession } from '../../../hooks/useAudit';
 import { ScoreRing } from '../components/ScoreRing';
-import { calculateAuditScore } from '../../../shared/validators';
+import { calculateAuditScore } from '../../../shared/audit-scoring';
 import { API_URL } from '../../../lib/api';
 import type { AuditCategory, AuditResponse } from '../../../shared/types';
 

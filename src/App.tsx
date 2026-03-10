@@ -14,7 +14,7 @@ import { UsersListPage } from './pages/UsersListPage';
 import { UserCreatePage } from './pages/UserCreatePage';
 import { UserDetailPage } from './pages/UserDetailPage';
 import GdprPage from './pages/GdprPage';
-import { ReportingPage } from './pages/ReportingPage';
+import { OrganisationPage } from './pages/OrganisationPage';
 import { StoreExcellenceAuditRoutes } from './tools/store-excellence-audit/index';
 
 export function App() {
@@ -41,7 +41,11 @@ export function App() {
           {/* tenant_admin+ */}
           <Route element={<ProtectedRoute minRole="tenant_admin" />}>
             <Route path="/gdpr" element={<GdprPage />} />
-            <Route path="/reporting" element={<ReportingPage />} />
+          </Route>
+
+          {/* regional_manager+ */}
+          <Route element={<ProtectedRoute minRole="regional_manager" />}>
+            <Route path="/reporting" element={<OrganisationPage />} />
           </Route>
 
           {/* store_manager+ (Benutzer verwalten, Stores, Tools) */}

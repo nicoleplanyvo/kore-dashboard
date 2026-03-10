@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Check, Plus, Users, Pencil, Save, X } from 'lucide-react';
+import { ArrowLeft, Check, Plus, Users, Pencil, Save, X, GitBranch } from 'lucide-react';
 import { Badge } from '../components/ui';
 import { useStore, useStoreTools, useAssignStoreTool, useUnassignStoreTool, useStoreUsers, useUpdateStoreUsers } from '../hooks/useStores';
 import { TOOL_CATEGORIES, CATEGORY_ORDER } from '../lib/moduleCategories';
@@ -85,10 +85,17 @@ export function StoreDetailPage() {
       </div>
 
       {/* Store Info */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-lg mb-xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg mb-xl">
         <div className="bg-kore-white border border-kore-border p-xl">
           <p className="font-body text-caption text-kore-mid uppercase tracking-[0.14em]">Kunde</p>
           <p className="font-display text-h3 text-kore-ink mt-xs">{store.tenant.name}</p>
+        </div>
+        <div className="bg-kore-white border border-kore-border p-xl">
+          <p className="font-body text-caption text-kore-mid uppercase tracking-[0.14em]">Region</p>
+          <div className="flex items-center gap-xs mt-xs">
+            <GitBranch size={16} className="text-kore-mid" />
+            <p className="font-display text-h3 text-kore-ink">{store.region?.name || '—'}</p>
+          </div>
         </div>
         <div className="bg-kore-white border border-kore-border p-xl">
           <p className="font-body text-caption text-kore-mid uppercase tracking-[0.14em]">Standort</p>
